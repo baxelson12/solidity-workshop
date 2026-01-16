@@ -5,6 +5,7 @@ libs = ["lib", "dependencies"]
 
 [dependencies]
 smartcontractkit-chainlink-evm = "1.5.0"
+solady = "0.1.26"
 
 [rpc_endpoints]
 mainnet = "https://rpc.flashbots.net"

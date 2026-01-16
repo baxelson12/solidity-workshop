@@ -4,3 +4,10 @@ version = "1.5.0"
 url = "https://soldeer-revisions.s3.amazonaws.com/smartcontractkit-chainlink-evm/1_5_0_02-10-2025_12:45:11_smartcontractkit-chainlink-evm-1.5.zip"
 checksum = "a7fd8fbdd165f0515bc3914ad2ea477564e7b09f9b3b676b271f0d74e6de7fa9"
 integrity = "437b083ac0567eae502c6bc6ff360d46de634917254e3dbae06faf1b85cd1372"
+
+[[dependencies]]
+name = "solady"
+version = "0.1.26"
+url = "https://soldeer-revisions.s3.amazonaws.com/solady/0_1_26_25-08-2025_15:30:06_solady.zip"
+checksum = "9872ac7cfd32c1eba32800508a1325c49f4a4aa8c6f670454db91971a583e26b"
+integrity = "5da4b5ca9cbad98812a4b75ad528ff34c72a0b84433204be6d1420c81de1d6ff"
