@@ -4,17 +4,11 @@ pragma solidity ^0.8.13;
 import "smartcontractkit-chainlink-evm-1.5.0/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import "solady-0.1.26/src/auth/Ownable.sol";
 import "./IVendingMachine.sol";
+import "./Pausable.sol";
 
-contract VendingMachine is IVendingMachine, Ownable {
+contract VendingMachine is IVendingMachine, Ownable, Pausable {
     mapping(string => Item) public inventory;
-    bool public paused = false;
     AggregatorV3Interface public feed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
-
-    /// @notice Ensures functions this is attached to cannot be called while paused
-    modifier whenNotPaused() {
-        require(!paused, "Contract is paused");
-        _;
-    }
 
     constructor() {
         _initializeOwner(msg.sender);
