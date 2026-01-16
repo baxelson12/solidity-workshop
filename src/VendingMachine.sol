@@ -9,12 +9,32 @@ contract VendingMachine is IVendingMachine {
 
     constructor() {}
 
-    function addInventory(string memory location, uint128 price, uint64 stock) external {}
-    function removeInventory(string memory location) external {}
+    function addInventory(string memory location, uint128 price, uint64 stock) external {
+        Item storage item = inventory[location];
+        require(item.price == 0, "Cannot overwrite item");
+        require(price > 0, "Cannot create free item");
+
+        item.price = price;
+        item.stock = stock;
+        emit ItemAdded(location, price, stock);
+    }
+
+    function removeInventory(string memory location) external {
+        delete inventory[location];
+        emit ItemRemoved(location);
+    }
     function restock(string memory location, uint64 stock) external {}
     function reprice(string memory location, uint128 price) external {}
     function purchase(string memory location) external payable {}
-    function pause() external {}
-    function unpause() external {}
+
+    function pause() external {
+        paused = true;
+        emit PauseStateChanged(paused);
+    }
+
+    function unpause() external {
+        paused = false;
+        emit PauseStateChanged(paused);
+    }
     function collect() external {}
 }
