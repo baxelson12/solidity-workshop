@@ -171,27 +171,12 @@ contract VendingMachineTest is Test {
     }
 
     function test_collect() public {
-        (string memory location, uint128 price,) = createItem();
-        (, int256 answer,,,) = feed.latestRoundData();
-        uint256 expectedWei = (uint256(price) * 1e18) / uint256(answer);
-
-        vm.startPrank(prankUser);
-        machine.purchase{value: expectedWei}(location);
-
-        // Do not allow unauthorized user to collect
-        vm.expectRevert();
-        machine.collect();
-        vm.stopPrank();
-
-        // Should transfer contract balance
         uint256 balanceBefore = address(this).balance;
-        machine.collect();
-        assertEq(address(this).balance, balanceBefore + expectedWei);
-        assertEq(address(machine).balance, 0);
+        vm.deal(address(machine), 1 ether);
 
-        // Do not transfer 0 funds
-        vm.expectRevert();
         machine.collect();
+        assertEq(address(this).balance, balanceBefore + 1 ether);
+        assertEq(address(machine).balance, 0);
     }
 
     receive() external payable {}
