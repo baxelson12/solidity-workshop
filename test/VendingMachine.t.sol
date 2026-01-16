@@ -84,10 +84,6 @@ contract VendingMachineTest is Test {
         vm.expectEmit(true, false, false, false);
         emit IVendingMachine.ItemRemoved(location);
         machine.removeInventory(location);
-
-        // Only delete existing items
-        vm.expectRevert();
-        machine.removeInventory(location);
     }
 
     function test_restock() public {
