@@ -7,7 +7,9 @@ import "./IVendingMachine.sol";
 import "./Pausable.sol";
 
 contract VendingMachine is IVendingMachine, Ownable, Pausable {
+    /// Maintains a mapping of all items in the vending machine
     mapping(string => Item) public inventory;
+    /// Reference to the chainlink Oracle for ETH/USD price
     AggregatorV3Interface public feed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
 
     constructor() {
