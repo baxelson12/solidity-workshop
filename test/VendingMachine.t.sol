@@ -168,10 +168,10 @@ contract VendingMachineTest is Test {
     function test_pauseUnpause() public {
         machine.pause();
 
-        assertEq(machine.paused, true);
+        assertEq(machine.paused(), true);
 
         machine.unpause();
-        assertEq(machine.paused, false);
+        assertEq(machine.paused(), false);
     }
 
     function test_collect() public {
