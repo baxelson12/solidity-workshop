@@ -17,8 +17,8 @@ contract VendingMachineTest is Test {
     }
 
     /// Helper to create item
-    function createItem() private returns (string memory location, uint128 price, uint64 stock) {
-        location = "D8";
+    function createItem() private returns (bytes3 location, uint128 price, uint64 stock) {
+        location = bytes3("D8");
         price = 2 * 1e8;
         stock = 5;
         machine.addInventory(location, price, stock);
@@ -33,19 +33,19 @@ contract VendingMachineTest is Test {
 
         // addInventory
         vm.expectRevert();
-        machine.addInventory("D9", 2 * 1e8, 5);
+        machine.addInventory(bytes3("D9"), 2 * 1e8, 5);
 
         // removeInventory
         vm.expectRevert();
-        machine.removeInventory("D8");
+        machine.removeInventory(bytes3("D8"));
 
         // restock
         vm.expectRevert();
-        machine.restock("D8", 6);
+        machine.restock(bytes3("D8"), 6);
 
         // reprice
         vm.expectRevert();
-        machine.reprice("D8", 3 * 1e8);
+        machine.reprice(bytes3("D8"), 3 * 1e8);
 
         // pause
         vm.expectRevert();
@@ -62,8 +62,8 @@ contract VendingMachineTest is Test {
 
     function test_addInventory() public {
         vm.expectEmit(true, false, false, true);
-        emit IVendingMachine.ItemAdded("D8", 2 * 1e8, 5);
-        (string memory location, uint128 price, uint64 stock) = createItem();
+        emit IVendingMachine.ItemAdded(bytes3("D8"), 2 * 1e8, 5);
+        (bytes3 location, uint128 price, uint64 stock) = createItem();
 
         (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory(location);
         assertEq(priceNew, price);
@@ -76,18 +76,18 @@ contract VendingMachineTest is Test {
 
         // No free items
         vm.expectRevert();
-        machine.addInventory("D10", 0, 5);
+        machine.addInventory(bytes3("D10"), 0, 5);
     }
 
     function test_removeInventory() public {
-        (string memory location,,) = createItem();
+        (bytes3 location,,) = createItem();
         vm.expectEmit(true, false, false, false);
         emit IVendingMachine.ItemRemoved(location);
         machine.removeInventory(location);
     }
 
     function test_restock() public {
-        (string memory location, uint128 price, uint64 stock) = createItem();
+        (bytes3 location, uint128 price, uint64 stock) = createItem();
         vm.expectEmit(true, false, false, true);
         emit IVendingMachine.ItemRestocked(location, stock + 5);
         machine.restock(location, 5);
@@ -100,33 +100,33 @@ contract VendingMachineTest is Test {
 
         // Only update existing items
         vm.expectRevert();
-        machine.restock("D10", 8);
+        machine.restock(bytes3("D10"), 8);
     }
 
     function test_reprice() public {
         createItem();
-        (, uint64 origStock, uint64 origSold) = machine.inventory("D8");
+        (, uint64 origStock, uint64 origSold) = machine.inventory(bytes3("D8"));
         vm.expectEmit(true, false, false, true);
-        emit IVendingMachine.ItemRepriced("D8", 5 * 1e8);
+        emit IVendingMachine.ItemRepriced(bytes3("D8"), 5 * 1e8);
 
-        machine.reprice("D8", 5 * 1e8);
-        (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory("D8");
+        machine.reprice(bytes3("D8"), 5 * 1e8);
+        (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory(bytes3("D8"));
         assertEq(priceNew, 5 * 1e8);
         assertEq(stockNew, origStock);
         assertEq(soldNew, origSold);
 
         // Only update existing items
         vm.expectRevert();
-        machine.reprice("D10", 2 * 1e8);
+        machine.reprice(bytes3("D10"), 2 * 1e8);
 
         // No free items
         vm.expectRevert();
-        machine.reprice("D8", 0);
+        machine.reprice(bytes3("D8"), 0);
     }
 
     function test_purchase() public {
-        (string memory location, uint128 price, uint64 stock) = createItem();
-        machine.addInventory("D10", price, 0);
+        (bytes3 location, uint128 price, uint64 stock) = createItem();
+        machine.addInventory(bytes3("D10"), price, 0);
         machine.unpause();
         (, uint64 savedStock, uint64 savedTotalSold) = machine.inventory(location);
         (, int256 answer,,,) = feed.latestRoundData();
@@ -144,11 +144,11 @@ contract VendingMachineTest is Test {
 
         // No out of stock items
         vm.expectRevert();
-        machine.purchase{value: expectedWei}("D10");
+        machine.purchase{value: expectedWei}(bytes3("D10"));
 
         // No nonexistent items
         vm.expectRevert();
-        machine.purchase{value: 1 ether}("D15");
+        machine.purchase{value: 1 ether}(bytes3("D11"));
 
         // No free items
         vm.expectRevert();

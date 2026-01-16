@@ -8,7 +8,7 @@ import "./Pausable.sol";
 
 contract VendingMachine is IVendingMachine, Ownable, Pausable {
     /// Maintains a mapping of all items in the vending machine
-    mapping(string => Item) public inventory;
+    mapping(bytes3 => Item) public inventory;
     /// Reference to the chainlink Oracle for ETH/USD price
     AggregatorV3Interface public immutable feed;
 
@@ -17,7 +17,7 @@ contract VendingMachine is IVendingMachine, Ownable, Pausable {
         feed = AggregatorV3Interface(oracle);
     }
 
-    function addInventory(string memory location, uint128 price, uint64 stock) external onlyOwner {
+    function addInventory(bytes3 location, uint128 price, uint64 stock) external onlyOwner {
         Item storage item = inventory[location];
         if (item.price > 0) revert NoOverwrites();
         if (price == 0) revert NoFreeItems();
@@ -27,12 +27,12 @@ contract VendingMachine is IVendingMachine, Ownable, Pausable {
         emit ItemAdded(location, price, stock);
     }
 
-    function removeInventory(string memory location) external onlyOwner {
+    function removeInventory(bytes3 location) external onlyOwner {
         delete inventory[location];
         emit ItemRemoved(location);
     }
 
-    function restock(string memory location, uint64 stock) external onlyOwner {
+    function restock(bytes3 location, uint64 stock) external onlyOwner {
         Item storage item = inventory[location];
         if (item.price == 0) revert NonexistentItem();
 
@@ -40,7 +40,7 @@ contract VendingMachine is IVendingMachine, Ownable, Pausable {
         emit ItemRestocked(location, item.stock);
     }
 
-    function reprice(string memory location, uint128 price) external onlyOwner {
+    function reprice(bytes3 location, uint128 price) external onlyOwner {
         Item storage item = inventory[location];
         if (item.price == 0) revert NonexistentItem();
         if (price == 0) revert NoFreeItems();
@@ -49,7 +49,7 @@ contract VendingMachine is IVendingMachine, Ownable, Pausable {
         emit ItemRepriced(location, price);
     }
 
-    function purchase(string memory location) external payable whenNotPaused {
+    function purchase(bytes3 location) external payable whenNotPaused {
         Item storage item = inventory[location];
         if (item.price == 0) revert NonexistentItem();
         if (item.stock == 0) revert OutOfStock();
