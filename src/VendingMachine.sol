@@ -58,10 +58,7 @@ contract VendingMachine is IVendingMachine, Ownable, Pausable {
         uint256 expectedWei = (uint256(item.price) * 1e18) / uint256(ethValueWei);
         if (msg.value < expectedWei) revert IncorrectValueSent();
 
-        item.sold++;
-        item.stock--;
-
-        emit ItemPurchased(location, item.stock, item.sold);
+        emit ItemPurchased(location, --item.stock, ++item.sold);
     }
 
     function pause() external onlyOwner {
