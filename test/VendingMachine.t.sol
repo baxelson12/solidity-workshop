@@ -109,7 +109,7 @@ contract VendingMachineTest is Test {
 
     function test_reprice() public {
         createItem();
-        (uint128 origPrice, uint64 origStock, uint64 origSold) = machine.inventory("D8");
+        (, uint64 origStock, uint64 origSold) = machine.inventory("D8");
         vm.expectEmit(true, false, false, true);
         emit IVendingMachine.ItemRepriced("D8", 5 * 1e8);
 
@@ -175,7 +175,7 @@ contract VendingMachineTest is Test {
     }
 
     function test_collect() public {
-        (string memory location, uint128 price, uint64 stock) = createItem();
+        (string memory location, uint128 price,) = createItem();
         (, int256 answer,,,) = feed.latestRoundData();
         uint256 expectedWei = (uint256(price) * 1e18) / uint256(answer);
 
