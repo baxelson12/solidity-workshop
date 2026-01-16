@@ -96,7 +96,7 @@ contract VendingMachineTest is Test {
         emit IVendingMachine.ItemRestocked(location, stock + 5);
         machine.restock(location, 5);
 
-        IVendingMachine.Item memory item = machine.items(location);
+        IVendingMachine.Item memory item = machine.inventory(location);
         assertEq(item.stock, 10);
         assertEq(item.price, price);
         assertEq(item.sold, 0);
@@ -109,12 +109,12 @@ contract VendingMachineTest is Test {
 
     function test_reprice() public {
         createItem();
-        IVendingMachine.Item memory orig = machine.items("D8");
+        IVendingMachine.Item memory orig = machine.inventory("D8");
         vm.expectEmit(true, false, false, true);
         emit IVendingMachine.ItemRepriced("D8", 5 * 1e8);
 
         machine.reprice("D8", 5 * 1e8);
-        IVendingMachine.Item memory item = machine.items("D8");
+        IVendingMachine.Item memory item = machine.inventory("D8");
         assertEq(item.price, 5 * 1e8);
         assertEq(item.stock, orig.stock);
         assertEq(item.sold, orig.sold);
