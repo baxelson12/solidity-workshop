@@ -139,7 +139,7 @@ contract VendingMachineTest is Test {
         emit IVendingMachine.ItemPurchased(location, stock - 1, savedTotalSold + 1);
 
         vm.startPrank(prankUser);
-        machine.purchaseInventory{value: expectedWei}(location);
+        machine.purchase{value: expectedWei}(location);
 
         (, uint64 stockAfterPurchase, uint64 totalSoldAfterPurchase) = machine.inventory(location);
         assertEq(stockAfterPurchase, savedStock - 1);
