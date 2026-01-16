@@ -1,0 +1,6 @@
+[[dependencies]]
+name = "smartcontractkit-chainlink-evm"
+version = "1.5.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/smartcontractkit-chainlink-evm/1_5_0_02-10-2025_12:45:11_smartcontractkit-chainlink-evm-1.5.zip"
+checksum = "a7fd8fbdd165f0515bc3914ad2ea477564e7b09f9b3b676b271f0d74e6de7fa9"
+integrity = "437b083ac0567eae502c6bc6ff360d46de634917254e3dbae06faf1b85cd1372"
