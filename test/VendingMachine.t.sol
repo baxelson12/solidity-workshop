@@ -65,7 +65,7 @@ contract VendingMachineTest is Test {
         emit IVendingMachine.ItemAdded("D8", 2 * 1e8, 5);
         (string memory location, uint128 price, uint64 stock) = createItem();
 
-        IVendingMachine.Item memory item = machine.items(location);
+        IVendingMachine.Item memory item = machine.inventory(location);
         assertEq(item.price, price);
         assertEq(item.stock, stock);
         assertEq(item.sold, 0);
