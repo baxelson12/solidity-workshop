@@ -184,12 +184,15 @@ contract VendingMachineTest is Test {
         vm.stopPrank();
 
         // Should transfer contract balance
+        uint256 balanceBefore = address(this).balance;
         machine.collect();
-        assertEq(address(msg.sender).balance, expectedWei);
+        assertEq(address(this).balance, balanceBefore + expectedWei);
         assertEq(address(machine).balance, 0);
 
         // Do not transfer 0 funds
         vm.expectRevert();
         machine.collect();
     }
+
+    receive() external payable {}
 }
