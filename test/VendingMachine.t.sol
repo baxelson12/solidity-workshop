@@ -65,10 +65,10 @@ contract VendingMachineTest is Test {
         emit IVendingMachine.ItemAdded("D8", 2 * 1e8, 5);
         (string memory location, uint128 price, uint64 stock) = createItem();
 
-        IVendingMachine.Item memory item = machine.inventory(location);
-        assertEq(item.price, price);
-        assertEq(item.stock, stock);
-        assertEq(item.sold, 0);
+        (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory(location);
+        assertEq(priceNew, price);
+        assertEq(stockNew, stock);
+        assertEq(soldNew, 0);
 
         // No duplicates
         vm.expectRevert();
@@ -96,11 +96,11 @@ contract VendingMachineTest is Test {
         emit IVendingMachine.ItemRestocked(location, stock + 5);
         machine.restock(location, 5);
 
-        IVendingMachine.Item memory item = machine.inventory(location);
-        assertEq(item.stock, 10);
-        assertEq(item.price, price);
-        assertEq(item.sold, 0);
-        vm.assertGt(item.stock, stock);
+        (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory(location);
+        assertEq(stockNew, 10);
+        assertEq(priceNew, price);
+        assertEq(soldNew, 0);
+        vm.assertGt(stockNew, stock);
 
         // Only update existing items
         vm.expectRevert();
@@ -109,15 +109,15 @@ contract VendingMachineTest is Test {
 
     function test_reprice() public {
         createItem();
-        IVendingMachine.Item memory orig = machine.inventory("D8");
+        (uint128 origPrice, uint64 origStock, uint64 origSold) = machine.inventory("D8");
         vm.expectEmit(true, false, false, true);
         emit IVendingMachine.ItemRepriced("D8", 5 * 1e8);
 
         machine.reprice("D8", 5 * 1e8);
-        IVendingMachine.Item memory item = machine.inventory("D8");
-        assertEq(item.price, 5 * 1e8);
-        assertEq(item.stock, orig.stock);
-        assertEq(item.sold, orig.sold);
+        (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory("D8");
+        assertEq(priceNew, 5 * 1e8);
+        assertEq(stockNew, origStock);
+        assertEq(soldNew, origSold);
 
         // Only update existing items
         vm.expectRevert();
