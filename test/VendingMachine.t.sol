@@ -127,6 +127,7 @@ contract VendingMachineTest is Test {
     function test_purchase() public {
         (string memory location, uint128 price, uint64 stock) = createItem();
         machine.addInventory("D10", price, 0);
+        machine.unpause();
         (, uint64 savedStock, uint64 savedTotalSold) = machine.inventory(location);
         (, int256 answer,,,) = feed.latestRoundData();
         uint256 expectedWei = (uint256(price) * 1e18) / uint256(answer);
