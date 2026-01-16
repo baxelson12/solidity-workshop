@@ -22,8 +22,8 @@ contract VendingMachine is IVendingMachine, Ownable {
 
     function addInventory(string memory location, uint128 price, uint64 stock) external onlyOwner {
         Item storage item = inventory[location];
-        require(item.price == 0, "Cannot overwrite item");
-        require(price > 0, "Cannot create free item");
+        if (item.price > 0) revert NoOverwrites();
+        if (price == 0) revert NoFreeItems();
 
         item.price = price;
         item.stock = stock;
@@ -37,7 +37,7 @@ contract VendingMachine is IVendingMachine, Ownable {
 
     function restock(string memory location, uint64 stock) external onlyOwner {
         Item storage item = inventory[location];
-        require(item.price > 0, "Item does not exist");
+        if (item.price == 0) revert NonexistentItem();
 
         item.stock += stock;
         emit ItemRestocked(location, item.stock);
@@ -45,8 +45,8 @@ contract VendingMachine is IVendingMachine, Ownable {
 
     function reprice(string memory location, uint128 price) external onlyOwner {
         Item storage item = inventory[location];
-        require(item.price > 0, "Item does not exist");
-        require(price > 0, "Cannot create free item");
+        if (item.price == 0) revert NonexistentItem();
+        if (price == 0) revert NoFreeItems();
 
         item.price = price;
         emit ItemRepriced(location, price);
@@ -54,12 +54,12 @@ contract VendingMachine is IVendingMachine, Ownable {
 
     function purchase(string memory location) external payable whenNotPaused {
         Item storage item = inventory[location];
-        require(item.price > 0, "Item does not exist");
-        require(item.stock > 0, "Item is out of stock");
+        if (item.price == 0) revert NonexistentItem();
+        if (item.stock == 0) revert OutOfStock();
 
         (, int256 ethValueWei,,,) = feed.latestRoundData();
         uint256 expectedWei = (uint256(item.price) * 1e18) / uint256(ethValueWei);
-        require(msg.value >= expectedWei, "Value received is less than item price");
+        if (msg.value < expectedWei) revert IncorrectValueSent();
 
         item.sold++;
         item.stock--;
@@ -79,9 +79,9 @@ contract VendingMachine is IVendingMachine, Ownable {
 
     function collect() external onlyOwner {
         uint256 amount = address(this).balance;
-        require(amount > 0, "Nothing to transfer");
+        if (amount == 0) revert NoZeroTransfers();
         (bool success,) = owner().call{value: amount}("");
-        require(success, "Transfer failed");
+        if (!success) revert CollectFailed();
 
         emit FundsCollected(amount);
     }

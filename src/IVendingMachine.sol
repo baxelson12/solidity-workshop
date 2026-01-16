@@ -27,6 +27,21 @@ interface IVendingMachine {
     /// Emitted when funds from the contract are collected
     event FundsCollected(uint256 amount);
 
+    /// Cannot overwrite item
+    error NoOverwrites();
+    /// Cannot create free item
+    error NoFreeItems();
+    /// Item does not exist
+    error NonexistentItem();
+    /// Item is out of stock
+    error OutOfStock();
+    /// Value received is less than item price
+    error IncorrectValueSent();
+    /// Nothing to transfer
+    error NoZeroTransfers();
+    /// Transfer failed
+    error CollectFailed();
+
     /// @notice Create a new Item in the vending machine
     /// @param location The location of the item within the vending machine
     /// @param price The price of the item in USD with 8 decimals (10^8)
