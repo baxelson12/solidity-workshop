@@ -12,7 +12,7 @@ contract VendingMachineTest is Test {
     AggregatorV3Interface feed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
 
     function setUp() public {
-        machine = new VendingMachine();
+        machine = new VendingMachine(vm.envAddress("ORACLE"));
         vm.deal(prankUser, 10 ether);
     }
 
