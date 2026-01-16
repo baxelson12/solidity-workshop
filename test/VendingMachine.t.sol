@@ -66,9 +66,9 @@ contract VendingMachineTest is Test {
         (string memory location, uint128 price, uint64 stock) = createItem();
 
         (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory(location);
-        vm.assertEq(priceNew, price);
-        vm.assertEq(stockNew, stock);
-        vm.assertEq(soldNew, 0);
+        assertEq(priceNew, price);
+        assertEq(stockNew, stock);
+        assertEq(soldNew, 0);
 
         // No duplicates
         vm.expectRevert();
@@ -97,9 +97,9 @@ contract VendingMachineTest is Test {
         machine.restock(location, 5);
 
         (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory(location);
-        vm.assertEq(stockNew, 10);
-        vm.assertEq(priceNew, price);
-        vm.assertEq(soldNew, 0);
+        assertEq(stockNew, 10);
+        assertEq(priceNew, price);
+        assertEq(soldNew, 0);
         vm.assertGt(stockNew, stock);
 
         // Only update existing items
@@ -115,9 +115,9 @@ contract VendingMachineTest is Test {
 
         machine.reprice("D8", 5 * 1e8);
         (uint128 priceNew, uint64 stockNew, uint64 soldNew) = machine.inventory("D8");
-        vm.assertEq(priceNew, 5 * 1e8);
-        vm.assertEq(stockNew, origStock);
-        vm.assertEq(soldNew, origSold);
+        assertEq(priceNew, 5 * 1e8);
+        assertEq(stockNew, origStock);
+        assertEq(soldNew, origSold);
 
         // Only update existing items
         vm.expectRevert();
@@ -142,8 +142,8 @@ contract VendingMachineTest is Test {
         machine.purchase{value: expectedWei}(location);
 
         (, uint64 stockAfterPurchase, uint64 totalSoldAfterPurchase) = machine.inventory(location);
-        vm.assertEq(stockAfterPurchase, savedStock - 1);
-        vm.assertEq(totalSoldAfterPurchase, savedTotalSold + 1);
+        assertEq(stockAfterPurchase, savedStock - 1);
+        assertEq(totalSoldAfterPurchase, savedTotalSold + 1);
 
         // No out of stock items
         vm.expectRevert();
@@ -168,10 +168,10 @@ contract VendingMachineTest is Test {
     function test_pauseUnpause() public {
         machine.pause();
 
-        vm.assertEq(machine.paused, true);
+        assertEq(machine.paused, true);
 
         machine.unpause();
-        vm.assertEq(machine.paused, false);
+        assertEq(machine.paused, false);
     }
 
     function test_collect() public {
@@ -189,8 +189,8 @@ contract VendingMachineTest is Test {
 
         // Should transfer contract balance
         machine.collect();
-        vm.assertEq(address(msg.sender).balance, expectedWei);
-        vm.assertEq(address(machine).balance, 0);
+        assertEq(address(msg.sender).balance, expectedWei);
+        assertEq(address(machine).balance, 0);
 
         // Do not transfer 0 funds
         vm.expectRevert();
